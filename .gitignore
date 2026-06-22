@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# Environments
+.venv/
+venv/
+env/
+ENV/
+.python-version
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+*.bak
+
+# Personal Claude Code settings (per-machine)
+.claude/settings.local.json
+
+# Data archive (downloaded separately) and experiment outputs
+/data/
+/output/
+outputs/
+
+# Weights & Biases logs
+wandb/
+*.wandb
+
+# Profiling / debug byproducts
+*.lprof
+*.gv.pdf
+Source.gv

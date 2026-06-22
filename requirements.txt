@@ -1,0 +1,20 @@
+# Python dependencies for the PostTracking / Sample Matching reproduction code.
+#
+# Mitsuba 3 and Dr.Jit are NOT installed via pip here: build the custom
+# `unbiased-inverse-volume-rendering` branch of mitsuba3 from source and put it
+# on PYTHONPATH (see README). The pinned versions used in the paper are
+# mitsuba 3.0.0 / drjit 0.2.1.
+
+# Core
+numpy
+scipy
+opencv-python
+tqdm
+
+# Relighting evaluation metrics (calculate_relighting_psnr.py)
+torch
+scikit-image
+lpips
+
+# Optional: experiment logging (enabled with `reproduce.py --log`)
+wandb

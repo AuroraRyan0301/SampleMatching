@@ -1,0 +1,44 @@
+cff-version: 1.2.0
+message: "If you use this code in academic work, please cite the paper below."
+title: "Sample Matching for Joint Extinction Gradient Estimation in Differentiable Volume Rendering"
+authors:
+  - given-names: Ruihan
+    family-names: Yu
+    affiliation: "The University of Tokyo, Japan / Tsinghua University, China"
+  - given-names: Yu-Chen
+    family-names: Wang
+    affiliation: "University of California, Irvine, USA"
+  - given-names: Jingwang
+    family-names: Ling
+    affiliation: "University of Illinois Urbana-Champaign, USA"
+  - given-names: Feng
+    family-names: Xu
+    affiliation: "Tsinghua University, China"
+  - given-names: Shuang
+    family-names: Zhao
+    affiliation: "University of Illinois Urbana-Champaign, USA"
+preferred-citation:
+  type: article
+  title: "Sample Matching for Joint Extinction Gradient Estimation in Differentiable Volume Rendering"
+  authors:
+    - given-names: Ruihan
+      family-names: Yu
+    - given-names: Yu-Chen
+      family-names: Wang
+    - given-names: Jingwang
+      family-names: Ling
+    - given-names: Feng
+      family-names: Xu
+    - given-names: Shuang
+      family-names: Zhao
+  journal: "ACM Transactions on Graphics"
+  year: 2026
+  month: 7
+  volume: 45
+  issue: 4
+  start: 136
+  number: 136
+  doi: "10.1145/3811329"
+  url: "https://doi.org/10.1145/3811329"
+  publisher:
+    name: "Association for Computing Machinery"
