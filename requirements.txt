@@ -10,6 +10,7 @@ numpy
 scipy
 opencv-python
 tqdm
+huggingface_hub   # `hf` CLI for downloading the dataset (see README step 3)
 
 # Relighting evaluation metrics (calculate_relighting_psnr.py)
 torch

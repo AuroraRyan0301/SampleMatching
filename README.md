@@ -124,6 +124,47 @@ ninja
 Please use the `cuda_ad_rgb` variant. See the
 [Mitsuba 3 docs](https://mitsuba.readthedocs.io/) for full build instructions.
 
+<details>
+<summary><b>Building on a recent toolchain</b> (GCC &ge; 13 / CMake &ge; 4) — click to expand</summary>
+
+This is a 2022-era branch (Mitsuba 3.0.0 /
+Dr.Jit 0.2.1) and compiles cleanly with a period-appropriate compiler. On a
+current Linux system (e.g. GCC >= 13, CMake >= 4) the plain `cmake .. && ninja`
+above fails. The following recipe was verified on GCC 16 / CMake 4;
+it installs a 2022-era compiler into a conda env and points CMake at it:
+
+```bash
+conda create -n samplematching python=3.10 -y
+conda install -n samplematching -c conda-forge gcc_linux-64=12 gxx_linux-64=12 zlib -y
+CONDA=$(conda info --base)/envs/samplematching
+export CMAKE_POLICY_VERSION_MINIMUM=3.5            # bundled submodules predate CMake 3.5
+export CPATH=$CONDA/include LIBRARY_PATH=$CONDA/lib
+cmake -GNinja \
+    -DCMAKE_C_COMPILER=$CONDA/bin/x86_64-conda-linux-gnu-gcc \
+    -DCMAKE_CXX_COMPILER=$CONDA/bin/x86_64-conda-linux-gnu-g++ \
+    -DPython_EXECUTABLE=$CONDA/bin/python \
+    -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+    -DCMAKE_CXX_FLAGS="-include cstdint -include limits -include algorithm -include cstring" \
+    -DCMAKE_EXE_LINKER_FLAGS="-L$CONDA/lib -Wl,-rpath-link,$CONDA/lib -Wl,-rpath,$CONDA/lib" \
+    -DCMAKE_SHARED_LINKER_FLAGS="-L$CONDA/lib -Wl,-rpath-link,$CONDA/lib -Wl,-rpath,$CONDA/lib" \
+    -DCMAKE_MODULE_LINKER_FLAGS="-L$CONDA/lib -Wl,-rpath-link,$CONDA/lib -Wl,-rpath,$CONDA/lib" \
+    ..
+ninja
+```
+
+One source patch is also needed: in `ext/drjit/include/drjit/packet_intrin.h`,
+define `_X86GPRINTRIN_H_INCLUDED` next to the existing `_IMMINTRIN_H_INCLUDED`
+(GCC >= 11 moved the BMI intrinsics behind a new include guard). The `-include`
+flags work around headers that newer libstdc++ no longer pulls in transitively
+(e.g. `std::numeric_limits`); the linker flags resolve `libatomic` for the
+`mitsuba` CLI. To build only what you need, set `"enabled"` to
+`["scalar_rgb", "cuda_ad_rgb"]` in `build/mitsuba.conf` and re-run cmake.
+
+`cuda_ad_rgb` runs unmodified on recent GPUs: Dr.Jit emits `sm_60` PTX that
+the driver re-JITs for the installed device.
+
+</details>
+
 ### 2. Clone this repository and install Python dependencies
 
 ```bash
@@ -188,6 +229,22 @@ Outputs (checkpoints, preview renders, PSNR logs) are written to `output/`
 (override with `POSTTRACKING_OUTPUT_DIR`). Pass `--log` to enable optional
 Weights & Biases logging.
 
+Once a run has finished, build a side-by-side comparison figure from its preview
+renders. `datagen/make_fig.py` reads the preview `.exr` files from
+`output/<config>/<method>/`, tonemaps them to sRGB, and lays out
+`[reference | initial | each method's final render]` for one view, annotating each
+cell with its PSNR against the reference:
+
+```bash
+python datagen/make_fig.py --config bunny-cloud-l1-6e-3-formal-local-single-gpu --view 0
+```
+
+The result on a held-out test view of `bunny-cloud` — Sample Matching ("ours")
+reaches a higher PSNR than the DRT baseline in both the quadratic and linear cost
+regimes:
+
+![Four-method comparison on the bunny-cloud test view](figures/four_method_comparison.png)
+
 ### Methods
 
 Each formal experiment compares the DRT baseline against our method, each in a
@@ -231,7 +288,9 @@ python/
     ├── volpathfm_sd.py             ours: sample matching, quadratic O(n^2)
     ├── volpathfm_linear_sd.py      ours: sample matching, linear O(n)
     └── volpathsimple_no_bg.py      forward-only integrator for background-free previews
-datagen/                    scene / sensor / volume generation utilities
+datagen/
+├── gen_sensors.py / sensor_gen.py / gen_vol.py / render.py / upsampling.py   scene/sensor/volume generation
+└── make_fig.py             build the README method-comparison figure from a run's previews
 ```
 
 
