@@ -25,6 +25,7 @@ ENV/
 .claude/settings.local.json
 
 # Data archive (downloaded separately) and experiment outputs
+/posttracking_data.tar.gz
 /data/
 /output/
 outputs/
